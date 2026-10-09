@@ -32,163 +32,38 @@
 #include <cmath>
 #include <random>
 #include <ctime>
-#include <ctime>
 #include <cstdarg>
 #include <cstdio>
 
-// car position and speed
-static float carX = 440.0f;
-static float carY = 540.0f;
-static const float CAR_SPEED = 300.0f;
+#include "car.h"
+
+size_t buf_size = SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(uint32_t);
+car *car_main;
+int init_x = 440, init_y = 540;
+
 
 // initialize game data in this function
 void initialize()
 {
+    car_main = new car(init_x, init_y);
 }
 
 // this function is called to update game data,
 // dt - time elapsed since the previous update (in seconds)
 void act(float dt)
 {
-    if (is_key_pressed('W')) carY -= CAR_SPEED * dt;
-    if (is_key_pressed('S')) carY += CAR_SPEED * dt;
-    if (is_key_pressed('A')) carX -= CAR_SPEED * dt;
-    if (is_key_pressed('D')) carX += CAR_SPEED * dt;
-
-    // ограничения, чтобы машинка за экран не выехала
-    if (carX < 0)                   carX = 0;
-    if (carX > SCREEN_WIDTH - 144) carX = SCREEN_WIDTH - 144;
-
-    // Или только вперед назад кататься с фиксированной машинкой по "y" в правой полосе
-    //carY = 610;
+    car_main->act(dt);
 }
 
 // fill buffer in this function
 // uint32_t buffer[SCREEN_WIDTH][SCREEN_HEIGHT] - is an array of 32-bit colors (8 bits per R, G, B)
 void draw()
 {
-    // sky background
-    for (int i = 0; i < SCREEN_HEIGHT; i++)
-    {
-        for (int j = 0; j < SCREEN_WIDTH; j++)
-        {
-            buffer[i][j] = 0x4477aa;
-        }
-    }
-
-    // road
-    int roadY = 580;
-    for (int j = 0; j < SCREEN_WIDTH; j++)
-    {
-        for (int i = roadY; i < roadY + 120; i++)
-        {
-            if (i < SCREEN_HEIGHT)
-                buffer[i][j] = 0x555555;
-        }
-    }
-
-    // road lines
-    for (int j = 0; j < SCREEN_WIDTH; j += 80)
-    {
-        for (int dj = 0; dj < 40; dj++)
-        {
-            if (j + dj < SCREEN_WIDTH)
-                buffer[roadY + 60][j + dj] = 0xffffff;
-        }
-    }
-
-    int cx = (int)carX;
-    int cy = (int)carY;
-
-    // car body (red)
-    for (int i = carY; i < carY + 60 && i < SCREEN_HEIGHT; i++)
-    {
-        for (int j = carX; j < carX + 144; j++)
-        {
-            if (j < SCREEN_WIDTH)
-                buffer[i][j] = 0xcc2222;
-        }
-    }
-
-    // car top (cabin)
-    for (int i = carY - 30; i < carY && i >= 0; i++)
-    {
-        for (int j = carX + 24; j < carX + 120; j++)
-        {
-            if (j < SCREEN_WIDTH)
-                buffer[i][j] = 0xcc2222;
-        }
-    }
-
-    // windows (light blue)
-    for (int i = carY - 28; i < carY - 5; i++)
-    {
-        for (int j = carX + 30; j < carX + 65; j++)
-        {
-            if (j < SCREEN_WIDTH)
-                buffer[i][j] = 0x88ccff;
-        }
-    }
-    for (int i = carY - 28; i < carY - 5; i++)
-    {
-        for (int j = carX + 75; j < carX + 114; j++)
-        {
-            if (j < SCREEN_WIDTH)
-                buffer[i][j] = 0x88ccff;
-        }
-    }
-
-    // wheels (black)
-    int wheelY = carY + 52;
-    int wheelPositions[] = { carX + 16, carX + 100 };
-    for (int w = 0; w < 2; w++)
-    {
-        for (int i = wheelY; i < wheelY + 28 && i < SCREEN_HEIGHT; i++)
-        {
-            for (int j = wheelPositions[w]; j < wheelPositions[w] + 24; j++)
-            {
-                if (j < SCREEN_WIDTH)
-                    buffer[i][j] = 0x111111;
-            }
-        }
-    }
-
-    // wheel hubs (gray)
-    int hubPositions[] = { carX + 22, carX + 106 };
-    for (int w = 0; w < 2; w++)
-    {
-        for (int i = wheelY + 8; i < wheelY + 20; i++)
-        {
-            for (int j = hubPositions[w]; j < hubPositions[w] + 8; j++)
-            {
-                if (i < SCREEN_HEIGHT && j < SCREEN_WIDTH)
-                    buffer[i][j] = 0x888888;
-            }
-        }
-    }
-
-    // headlights (yellow)
-    for (int i = carY + 10; i < carY + 40; i++)
-    {
-        for (int j = carX + 138; j < carX + 144; j++)
-        {
-            if (i < SCREEN_HEIGHT && j < SCREEN_WIDTH)
-                buffer[i][j] = 0xffff44;
-        }
-    }
-
-    // taillights (red-orange)
-    for (int i = carY + 10; i < carY + 40; i++)
-    {
-        for (int j = carX; j < carX + 6; j++)
-        {
-            if (i < SCREEN_HEIGHT && j < SCREEN_WIDTH)
-                buffer[i][j] = 0xff4400;
-        }
-    }
+    car_main->draw();
 }
 
 // free game data in this function
 void finalize()
 {
+    delete(car_main);
 }
