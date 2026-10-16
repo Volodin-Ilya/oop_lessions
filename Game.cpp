@@ -36,29 +36,40 @@
 #include <cstdio>
 
 #include "car.h"
+#include "road.h"
+#include "sky.h"
 
 size_t buf_size = SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(uint32_t);
 car *car_main;
-int init_x = 440, init_y = 540;
+sky  *sky_main;
+road *road_main;
+
+// позиция и размеры дороги
+static const int ROAD_Y = 400;
+static const int ROAD_H = 300;
 
 
 // initialize game data in this function
 void initialize()
 {
-    car_main = new car(init_x, init_y);
+    sky_main = new sky();
+    road_main = new road(ROAD_Y, ROAD_H);
+    car_main = new car(440, 540);
 }
 
 // this function is called to update game data,
 // dt - time elapsed since the previous update (in seconds)
 void act(float dt)
 {
-    car_main->act(dt);
+    car_main->act(dt, road_main->get_top(), road_main->get_bottom());
 }
 
 // fill buffer in this function
 // uint32_t buffer[SCREEN_WIDTH][SCREEN_HEIGHT] - is an array of 32-bit colors (8 bits per R, G, B)
 void draw()
 {
+    sky_main->draw();
+    road_main->draw();
     car_main->draw();
 }
 
@@ -66,4 +77,6 @@ void draw()
 void finalize()
 {
     delete(car_main);
+    delete(road_main);
+    delete(sky_main);
 }

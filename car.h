@@ -4,7 +4,7 @@
 class car {
     int x, y;
     int default_x, default_y;
-    float speed; 
+
     car();
 public:
     car(int x, int y);
@@ -13,6 +13,6 @@ public:
     void set_x(int x);
     void set_y(int y);
     void draw();
-    void act(float dt);
+    void act(float dt, int road_top, int road_bottom);
     ~car() {};
 };

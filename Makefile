@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++17 -g -O0 -Wall -Wextra
 LDFLAGS = -lX11
 
 TARGET = game
-SRCS = Engine.cpp Game.cpp car.cpp
+SRCS = Engine.cpp Game.cpp car.cpp road.cpp sky.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)

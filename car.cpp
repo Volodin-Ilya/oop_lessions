@@ -8,7 +8,6 @@ car::car(int x, int y)
     this->y = y;
     this->default_x = x;
     this->default_y = y;
-    this->speed = 300.0f;
 }
 
 int car::get_x()
@@ -33,36 +32,6 @@ void car::set_y(int y)
 
 void car::draw()
 {
-
-    // sky background
-    for (int i = 0; i < SCREEN_HEIGHT; i++)
-    {
-        for (int j = 0; j < SCREEN_WIDTH; j++)
-        {
-            buffer[i][j] = 0x4477aa;
-        }
-    }
-
-    // road
-    int roadY = 580;
-    for (int j = 0; j < SCREEN_WIDTH; j++)
-    {
-        for (int i = roadY; i < roadY + 120; i++)
-        {
-            if (i < SCREEN_HEIGHT)
-                buffer[i][j] = 0x555555;
-        }
-    }
-
-    // road lines
-    for (int j = 0; j < SCREEN_WIDTH; j += 80)
-    {
-        for (int dj = 0; dj < 40; dj++)
-        {
-            if (j + dj < SCREEN_WIDTH)
-                buffer[roadY + 60][j + dj] = 0xffffff;
-        }
-    }
 
     // car position
     int carX = this->x;
@@ -156,8 +125,9 @@ void car::draw()
     }
 }
 
-void car::act(float dt)
+void car::act(float dt, int road_top, int road_bottom)
 {
+    const float speed = 300.0f;
     int step = (int)(speed * dt);
 
     if (is_key_pressed('W')) this->y -= step;
@@ -168,4 +138,8 @@ void car::act(float dt)
     // ораничение машинки экраном
     if (this->x < 0)                   this->x = 0;
     if (this->x > SCREEN_WIDTH - 144)  this->x = SCREEN_WIDTH - 144;
+
+    // и дорогой
+    if (this->y - 30 < road_top)     this->y = road_top + 30;
+    if (this->y + 80 > road_bottom)  this->y = road_bottom - 80;
 }
